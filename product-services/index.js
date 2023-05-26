@@ -17,7 +17,7 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.post('/product', function (req, res) {
+app.post('/products', function (req, res) {
     var product = req.body;
 
     console.log(product);

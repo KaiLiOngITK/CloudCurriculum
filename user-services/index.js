@@ -17,14 +17,30 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.post('/user', function (req, res) {
-    var user = req.body;
-
-    console.log(user);
-    users.push(user);
-    // var name = req.body.firstName + ' ' + req.body.lastName;
+app.post('/users', function (req, res) {
     
-    res.send('User has been added to the database!');
+    
+
+    if(!req.body.id ||
+        !req.body.name ||
+        !req.body.email){
+            res.status(400);
+            res.json({message: "Bad Request"});
+        }else{
+            var user = req.body;
+            users.push({
+                id: req.body.id,
+                name: req.body.name,
+                email: req.body.email
+            });
+            res.json({message: "New user created.", location: "/users/" + req.body.id})
+            res.status(201);
+            console.log(user);
+        }
+});
+
+app.get('/users', function (req, res){
+    res.json(users);
 });
 
 var server = app.listen(port, function () {
