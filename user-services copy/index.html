@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>User Management Service</title>
+    <title>Order Service</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
@@ -14,23 +14,23 @@
 <body>
     <div class="container">
         <hr>
-        <h1>User Management Service</h1>
+        <h1>Order Service</h1>
         <hr>
 
-        <form action="/user" method="post">
+        <form action="/oders" method="post">
             <div class="form-group">
                 <label>ID</label>
                 <input class="form-control" name="id">
             </div>
 
             <div class="form-group">
-                <label>Name</label>
-                <input class="form-control" name="name">
+                <label>User ID</label>
+                <input class="form-control" name="userId">
             </div>
 
             <div class="form-group">
-                <label>Email</label>
-                <input class="form-control" name="email">
+                <label>Product ID</label>
+                <input class="form-control" name="productIds">
             </div>
 
             <!--Other fields-->
