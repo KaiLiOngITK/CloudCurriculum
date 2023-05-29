@@ -1,9 +1,17 @@
-var express = require('express');
-var bodyParser = require("body-parser");
-var cors = require('cors');
+const express = require('express');
+const es6Renderer = require('express-es6-template-engine');
+const exphbs = require('express-handlebars');
+const bodyParser = require("body-parser");
+const cors = require('cors');
 
 var app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
+
+var serve
+
+app.engine('html', es6Renderer);
+app.set('views', 'views');
+app.set('view engine', 'html');
 
 // Where we will keep the users data
 let users = [];
@@ -13,8 +21,10 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// app.use(express.static(__dirname + '/index.html'));
+
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/index.html');
+    res.render('index', { locals: { title: 'User Management Service' } });
 });
 
 app.post('/users', function (req, res) {
@@ -32,15 +42,18 @@ app.post('/users', function (req, res) {
             email: req.body.email
         });
         // res.json({message: "New user created.", location: "/users/" + req.body.id})
-        // res.sendFile(__dirname + '/user-list.html');
+        res.json(users);
         res.status(201);
         console.log(user);
+
+        // res.render(__dirname + '/views/user-list.html', { token: users });
+        // res.sendFile(__dirname + '/views/user-list.html');
         // res.send('New user has been added into database');
     }
 });
 
 app.get('/users', function (req, res) {
-    // res.sendFile(__dirname + '/user-list.html');
+    // res.sendFile(__dirname + '/views/user-list.html');
     res.json(users);
 });
 
@@ -56,7 +69,7 @@ app.get('/users/:id', function (req, res) {
     }
 
     // Sending 404 when user not found
-    res.status(404).send('User not found');
+    res.status(404).send('Status 404: User not found');
 });
 
 app.delete('/users/:id', function (req, res) {
@@ -64,30 +77,28 @@ app.delete('/users/:id', function (req, res) {
     const id = req.params.id;
 
     // Remove item from the users array
-    users = user.filter(i => {
+    users = users.filter(i => {
         if (i.id !== id) {
             return true;
         }
         return false;
     });
 
-    res.send('User is deleted');
+    res.status(200).send('Status 200: User is deleted');
 });
 
-app.post('/users/:id', function (req, res) {
-    // Reading id from the URL
-    const id = req.params.id;
-    const newUser = req.user;
+app.put('/users/:id', function (req, res, next) {
+    const item = users.find(item => item.id === req.params.id);
+    var user = req.body;
 
-    // Remove item from the users array
-    for (let i = 0; i < users.length; i++) {
-        let user = users[i]
-        if (user.id == id) {
-            users[i] = newUser;
-        }
+    if(item){
+        item.id = user.id;
+        item.name = user.name;
+        item.email = user.email;
     }
-
-    res.send('User is edited');
+    res.json(users);
+    // res.status(200).send('User is edited. \n');
+    
 });
 
 var server = app.listen(port, function () {

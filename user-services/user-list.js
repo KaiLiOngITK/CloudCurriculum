@@ -1,4 +1,4 @@
-const setEditModal = (id) => {
+var setEditModal = (id) => {
     const xhttp = new XMLHttpRequest();
 
     xhttp.open("GET", `http://localhost:5000/users/${id}`, false);
@@ -19,7 +19,7 @@ const setEditModal = (id) => {
     document.getElementById('editForm').action = 'http://localhost:5000/users/${id}';
 }
 
-const deleteUser = (id) => {
+var deleteUser = (id) => {
     const xhttp = new XMLHttpRequest();
 
     xhttp.open("DELETE", 'http://localhost:5000/users/${id}', false);
@@ -28,7 +28,7 @@ const deleteUser = (id) => {
     location.reload();
 }
 
-const loadUsers = () => {
+var loadUsers = () => {
     const xhttp = new XMLHttpRequest();
 
     xhttp.open("GET", "http://localhost:5000/users", false);
@@ -36,26 +36,10 @@ const loadUsers = () => {
 
     const users = JSON.parse(xhttp.responseText);
 
+    header
     for (let user of users) {
-        const x = `
-            <div class="col-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">${user.name}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">${user.id}</h6>
-
-                        <div>Email: ${user.email}</div>
-                        <hr>
-
-                        <button type="button" class="btn btn-danger">Delete</button>
-                        <button types="button" class="btn btn-primary" data-toggle="modal" 
-                            data-target="#editUserModal" onClick="setEditModal(${user.id})">
-                            Edit
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `
+        const x = 
+        '<div class="col-4"><div class="card"><div class="card-body"><h5 class="card-title">${user.name}</h5><h6 class="card-subtitle mb-2 text-muted">${user.id}</h6><div>Email: ${user.email}</div><hr><button type="button" class="btn btn-danger">Delete</button><button types="button" class="btn btn-primary" data-toggle="modal" data-target="#editUserModal" onClick="setEditModal(${user.id})">Edit</button></div></div></div>'
 
         document.getElementById('users').innerHTML = document.getElementById('users').innerHTML + x;
     }

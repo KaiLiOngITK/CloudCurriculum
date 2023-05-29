@@ -14,7 +14,7 @@
 <body>
     <div class="container">
         <hr>
-        <h1>User Management Service</h1>
+        <h1>${title}</h1>
         <hr>
 
         <form action="/users" method="post">
@@ -36,6 +36,25 @@
             <!--Other fields-->
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
+    </div>
+
+    <div class="container">
+        <hr>
+        <h2>User Details</h2>
+        <hr>
+
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <!-- <h5 class="card-title">${user.name}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">${user.id}</h6>
+                    <div>Email: ${user.email}</div>
+                    <hr>
+                    <button type="button" class="btn btn-danger">Delete</button>
+                    <button types="button" class="btn btn-primary" data-toggle="modal" data-target="#editUserModal" onClick="setEditModal(${user.id})">Edit</button> -->
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
