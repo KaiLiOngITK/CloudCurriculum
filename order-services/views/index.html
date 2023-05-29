@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Product Catalog Service</title>
+    <title>Order Service</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
@@ -14,23 +14,23 @@
 <body>
     <div class="container">
         <hr>
-        <h1>Product Catalog Service</h1>
+        <h1>${title}</h1>
         <hr>
 
-        <form action="/products" method="post">
+        <form action="/orders" method="post">
             <div class="form-group">
                 <label>ID</label>
                 <input class="form-control" name="id">
             </div>
 
             <div class="form-group">
-                <label>Name</label>
-                <input class="form-control" name="name">
+                <label>User ID</label>
+                <input class="form-control" name="userId">
             </div>
 
             <div class="form-group">
-                <label>Description</label>
-                <input class="form-control" name="description">
+                <label>Product ID</label>
+                <input class="form-control" name="productIds">
             </div>
 
             <!--Other fields-->

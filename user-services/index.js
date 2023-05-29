@@ -7,8 +7,6 @@ const cors = require('cors');
 var app = express();
 const port = process.env.PORT || 5000;
 
-var serve
-
 app.engine('html', es6Renderer);
 app.set('views', 'views');
 app.set('view engine', 'html');
@@ -20,8 +18,6 @@ app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-// app.use(express.static(__dirname + '/index.html'));
 
 app.get('/', function (req, res) {
     res.render('index', { locals: { title: 'User Management Service' } });
