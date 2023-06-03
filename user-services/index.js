@@ -1,6 +1,6 @@
 const express = require('express');
 const es6Renderer = require('express-es6-template-engine');
-// const bodyParser = require("body-parser");
+const pool = require('./db');
 
 var app = express();
 const port = process.env.PORT || 8080;
@@ -11,14 +11,21 @@ app.set('view engine', 'html');
 
 app.use(express.json());
 
+console.log("Passed importing all details");
 // For keeping the users data
-let users = [];
+// let users = [];
 
 // app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
 
-app.get('/', function (req, res) {
+app.get('/', async function (req, res) {
     res.render('index', { locals: { title: 'User Management Service' } });
+    try{
+        const data = await pool.query("SELECT * FROM users")
+        res.send(data.rows);
+    }catch{
+        res.status(400).send('Error Occurs');
+    }
 });
 
 // GET /users - Retrieve all products
@@ -27,7 +34,7 @@ app.get('/users', function (req, res) {
 });
 
 // POST /users - Create a new user
-app.post('/users', function (req, res) {
+app.post('/users', async function (req, res) {
 
     if (!req.body.id ||
         !req.body.name ||
@@ -35,7 +42,10 @@ app.post('/users', function (req, res) {
         res.status(400).res.json({ message: "Bad Request" });
     } else {
         var user = req.body;
-        users.push(user);
+        // users.push(user);
+
+        await pool.query("INSERT INTO users (id, name, email) VALUES ($1,$2,$3)", [req.body.id,req.body.name,req.body.email])
+
         res.status(201).json(user);
     }
 });
