@@ -2,24 +2,24 @@ version: '3.8'
 
 services:
   user-services:
+    image: user-services
     restart: on-failure
     build: 
       context: ./user-services
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    # command: npm run start
     depends_on:
-      - user-services-database
+      - user-services-database-postgres
 
-  user-services-database:
-    image: postgres
+  user-services-database-postgres:
+    image: postgres:latest
     restart: always
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: user-services-database
     volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./volumes/postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"

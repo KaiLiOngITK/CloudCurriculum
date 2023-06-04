@@ -1,8 +1,17 @@
 const express = require('express');
 const es6Renderer = require('express-es6-template-engine');
 const pool = require('./db');
+// const { Pool, Client } = require('pg');
 
 var app = express();
+// const pool = new Pool({
+//     host: "user-services-database-postgres",
+//     port: 5432,
+//     user: "user",
+//     password: "password",
+//     database: "user-services-database-postgres"
+// });
+
 const port = process.env.PORT || 8080;
 
 app.engine('html', es6Renderer);
@@ -11,43 +20,54 @@ app.set('view engine', 'html');
 
 app.use(express.json());
 
-console.log("Passed importing all details");
 // For keeping the users data
 // let users = [];
 
-// app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(bodyParser.json());
-
-app.get('/', async function (req, res) {
-    res.render('index', { locals: { title: 'User Management Service' } });
-    try{
-        const data = await pool.query("SELECT * FROM users")
-        res.send(data.rows);
-    }catch{
-        res.status(400).send('Error Occurs');
-    }
-});
+// app.get('/', async function (req, res) {
+//     // res.render('index', { locals: { title: 'User Management Service' } });
+//     try {
+//         await pool.query("CREATE TABLE users(id INTEGER PRIMARY KEY, name VARCHAR(100), email VARCHAR(100))");
+//           res.send('Database Created');
+//         // const users = await pool.query("SELECT * FROM users")
+//         // res.send(users.rows);
+//     } catch {
+//         res.status(400).send('Error Occurs');
+//     }
+// });
 
 // GET /users - Retrieve all products
 app.get('/users', function (req, res) {
-    res.json(users);
+    // const users = pool.query("SELECT * FROM users")
+    // res.send(users.rows);
+    pool.query("SELECT * FROM users", (error, result) => {
+        if (error) {
+            console.error("Error executing query", error);
+            res.status(500).json({ error: "Internal server error" });
+        } else {
+            const users = result.rows;
+            res.status(200).json(users);
+        }
+    });
+    // res.json(users);
 });
 
 // POST /users - Create a new user
-app.post('/users', async function (req, res) {
+app.post('/users', function (req, res) {
 
-    if (!req.body.id ||
-        !req.body.name ||
-        !req.body.email) {
-        res.status(400).res.json({ message: "Bad Request" });
-    } else {
-        var user = req.body;
-        // users.push(user);
+    const { id, name, email } = req.body;
+    var user = req.body;
+    // users.push(user);
 
-        await pool.query("INSERT INTO users (id, name, email) VALUES ($1,$2,$3)", [req.body.id,req.body.name,req.body.email])
-
-        res.status(201).json(user);
-    }
+    pool.query("INSERT INTO users (id, name, email) VALUES ($1, $2, $3) RETURNING id, name, email", [id, name, email], (error, result) => {
+        if (error) {
+            console.error("Bad Request", error);
+            res.status(400).json({ error: "Bad Request" });
+        } else {
+            const createdUser = result.rows[0];
+            res.status(201).json(createdUser);
+        }
+    })
+    // res.status(201).json(user);
 });
 
 // GET /users/:id - Retrieve user by ID
