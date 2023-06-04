@@ -1,7 +1,7 @@
 # Start your image with a node base image
 # FROM alpine:3.14
 # RUN apk add --no-cache mysql-client
-FROM node:18-alpine
+FROM node:latest
 
 WORKDIR /app
 
@@ -11,6 +11,6 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8081
 
-CMD ["node", "./index.js"]
+CMD ["npm", "run", "start"]
