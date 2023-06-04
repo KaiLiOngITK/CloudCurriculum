@@ -1,75 +1,49 @@
-var express = require('express');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
 
-var app = express();
-const port = process.env.PORT || 8081;
+const app = express();
+
+var corsOptions = {
+  origin: "http://localhost:8081"
+};
+
+app.use(cors(corsOptions));
+
+// // parse requests of content-type - application/json
+// app.use(express.json());
+
+// // parse requests of content-type - application/x-www-form-urlencoded
+// app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 
-// Where we will keep the products data
-let products = [];
+const db = require("./app/models");
 
-app.get('/', function (req, res) {
-    res.render('index', { locals: { title: 'Product Catalog Service' } });
+console.log(db.url);
+
+db.mongoose
+  .connect(db.url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log("Connected to the database!");
+  })
+  .catch(err => {
+    console.log("Cannot connect to the database!", err);
+    process.exit();
+  });
+
+// simple route
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to product catalog service." });
 });
 
-app.post('/products', function (req, res) {
+require("./app/routes/product.routes")(app);
 
-    if (!req.body.id ||
-        !req.body.name ||
-        !req.body.description) {
-        res.status(400).res.json({ message: "Bad Request" });
-    } else {
-        var product = req.body;
-        products.push(product);
-        res.status(201).json(product);
-    }
-});
-
-app.get('/products', function (req, res) {
-    res.json(products);
-});
-
-app.get('/products/:id', function (req, res) {
-    const id = +req.params.id;
-    const product = products.find((product) => product.id === id);
-
-    if (product) {
-        res.json(product);
-    } else {
-        // Sending 404 when user not found
-        res.status(404).json({ error: 'Product not found' });
-    }
-});
-
-app.delete('/products/:id', function (req, res) {
-    // Reading id from the URL
-    const id = +req.params.id;
-
-    // Remove item from the products array
-    products = products.filter(i => {
-        if (i.id !== id) {
-            return true;
-        }
-        return false;
-    });
-
-    res.status(200).send('Status 200: Product is deleted');
-});
-
-app.put('/products/:id', function (req, res, next) {
-    const id = +req.params.id;
-    const item = products.find(item => item.id === id);
-    var product = req.body;
-
-    if (item) {
-        item.id = product.id;
-        item.name = product.name;
-        item.email = product.email;
-    }
-    res.json(products);
-
-});
-
-var server = app.listen(port, function () {
-    console.log('Node server is running..');
+// set port, listen for requests
+const PORT = process.env.NODE_DOCKER_PORT || 8081;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
 });
