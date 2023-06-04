@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   user-services:
-    image: user-services
+    image: node:18-alpine
     restart: on-failure
     build: 
       context: ./user-services
@@ -14,13 +14,13 @@ services:
 
   user-services-database-postgres:
     image: postgres:latest
-    restart: always
+    restart: on-failure
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./volumes/postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - ./user-services/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./user-services/volumes/postgres_data:/var/lib/postgresql/data
 

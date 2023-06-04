@@ -3,7 +3,7 @@
 # RUN apk add --no-cache mysql-client
 FROM node:18-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 

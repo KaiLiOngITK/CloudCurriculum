@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100)
+CREATE TABLE users (
+    id serial PRIMARY KEY,
+    name VARCHAR(50),
+    email VARCHAR(50)
 );

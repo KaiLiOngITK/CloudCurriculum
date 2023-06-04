@@ -1,16 +1,8 @@
 const express = require('express');
 const es6Renderer = require('express-es6-template-engine');
 const pool = require('./db');
-// const { Pool, Client } = require('pg');
 
 var app = express();
-// const pool = new Pool({
-//     host: "user-services-database-postgres",
-//     port: 5432,
-//     user: "user",
-//     password: "password",
-//     database: "user-services-database-postgres"
-// });
 
 const port = process.env.PORT || 8080;
 
@@ -20,11 +12,8 @@ app.set('view engine', 'html');
 
 app.use(express.json());
 
-// For keeping the users data
-// let users = [];
-
 // app.get('/', async function (req, res) {
-//     // res.render('index', { locals: { title: 'User Management Service' } });
+//     res.render('index', { locals: { title: 'User Management Service' } });
 //     try {
 //         await pool.query("CREATE TABLE users(id INTEGER PRIMARY KEY, name VARCHAR(100), email VARCHAR(100))");
 //           res.send('Database Created');
