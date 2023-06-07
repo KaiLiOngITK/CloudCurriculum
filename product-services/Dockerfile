@@ -3,9 +3,9 @@
 # RUN apk add --no-cache mysql-client
 FROM node:latest
 
-WORKDIR /product-services
+WORKDIR /app
 
-COPY package.json .
+COPY package*.json ./
 
 RUN npm install
 
@@ -13,4 +13,4 @@ COPY . .
 
 EXPOSE 8081
 
-CMD ["npm", "start"]
+CMD ["node", "index.js"]

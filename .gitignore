@@ -1,4 +1,4 @@
 # Dependency directories
 node_modules/
-volumes/
-db/
+user-services-database-postgres/
+mongodb-data/
