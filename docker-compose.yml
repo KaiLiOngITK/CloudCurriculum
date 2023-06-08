@@ -20,6 +20,18 @@ services:
     volumes:
       - ./mongodb-data:/data/db
 
+  order-services-database-postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: cloudcurriculum
+    volumes:
+      - ./order-services-database-postgres:/var/lib/postgresql/data
+
   user-services:
     build: 
       context: ./user-services
@@ -44,6 +56,19 @@ services:
     depends_on:
       - product-services-database-mongodb
 
+  order-services:
+    build: 
+      context: ./order-services
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_URI=postgresql://postgres:password@order-services-database-postgres:5433/postgres
+    ports:
+      - "8082:8082"
+    restart: always
+    depends_on:
+      - order-services-database-postgres
+
 volumes:
   user-services-database-postgres:
   mongodb-data:
+  order-services-database-postgres:
