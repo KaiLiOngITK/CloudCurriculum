@@ -55,48 +55,76 @@ app.post('/users', function (req, res) {
     // res.status(201).json(user);
 });
 
-// // GET /users/:id - Retrieve user by ID
-// app.get('/users/:id', function (req, res) {
-//     const id = +req.params.id;
-//     const user = users.find((user) => user.id === id);
+// GET /users/:id - Retrieve user by ID
+app.get('/users/:id', function (req, res) {
+    const id = +req.params.id;
+    // const user = users.find((user) => user.id === id);
 
-//     if (user) {
-//         res.json(user);
-//     } else {
-//         // Sending 404 when user not found
-//         res.status(404).json({ error: 'User not found' });
-//     }
-// });
+    pool.query("SELECT * FROM users where id = $1", [id], (error, result) => {
+        if (error) {
+            console.error("Error executing query", error);
+            res.status(500).json({ error: "Internal server error" });
+        } else {
+            const users = result.rows;
+            res.status(200).json(users);
+        }
+    });
+    // if (user) {
+    //     res.json(user);
+    // } else {
+    //     // Sending 404 when user not found
+    //     res.status(404).json({ error: 'User not found' });
+    // }
+});
 
-// app.delete('/users/:id', function (req, res) {
-//     // Reading id from the URL
-//     const id = +req.params.id;
+app.delete('/users/:id', function (req, res) {
+    // Reading id from the URL
+    const id = +req.params.id;
 
-//     // Remove item from the users array
-//     users = users.filter(i => {
-//         if (i.id !== id) {
-//             return true;
-//         }
-//         return false;
-//     });
+    pool.query("DELETE FROM users WHERE id = $1", [id], (error, result) => {
+        if (error) {
+            console.error("Error executing query", error);
+            res.status(500).json({ error: "Internal server error" });
+        } else {
+            const users = result.rows;
+            res.status(200).json(users);
+        }
+    });
+    // // Remove item from the users array
+    // users = users.filter(i => {
+    //     if (i.id !== id) {
+    //         return true;
+    //     }
+    //     return false;
+    // });
 
-//     res.status(200).json(users);
-// });
+    // res.status(200).json(users);
+});
 
-// app.put('/users/:id', function (req, res, next) {
-//     const id = +req.params.id;
-//     const item = users.find(item => item.id === id);
-//     var user = req.body;
+app.put('/users/:id', function (req, res, next) {
+    const id = +req.params.id;
+    // const item = users.find(item => item.id === id);
+    // var user = req.body;
+    const { name, email } = req.body;
 
-//     if (item) {
-//         item.id = user.id;
-//         item.name = user.name;
-//         item.email = user.email;
-//     }
-//     res.json(users);
-//     // res.status(200).send('User is edited. \n');
+    pool.query("UPDATE users SET name = $1, email = $2 WHERE id = $3", [name, email, id], (error, result) => {
+        if (error) {
+            console.error("Error executing query", error);
+            res.status(500).json({ error: "Internal server error" });
+        } else {
+            const users = result.rows;
+            res.status(200).json(users);
+        }
+    });
+    // if (item) {
+    //     item.id = user.id;
+    //     item.name = user.name;
+    //     item.email = user.email;
+    // }
+    // res.json(users);
+    // res.status(200).send('User is edited. \n');
 
-// });
+});
 
 var server = app.listen(port, function () {
     console.log('Node server is running..');
