@@ -9,6 +9,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: cloudcurriculum
     volumes:
       - ./user-services-database-postgres:/var/lib/postgresql/data
 
@@ -24,7 +25,7 @@ services:
       context: ./user-services
       dockerfile: Dockerfile
     environment:
-      - POSTGRES_URI=postgresql://postgres:password@postgres_users:5432/postgres
+      - POSTGRES_URI=postgresql://postgres:password@user-services-database-postgres:5432/postgres
     ports:
       - "8080:8080"
     restart: always
