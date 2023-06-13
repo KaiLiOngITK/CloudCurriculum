@@ -21,3 +21,18 @@ How to run services:
 docker build -t order-services:v1 .\order-services\
 docker run -p 8082:8082 -d order-services:v1
 ```
+
+
+
+## Week 2: Added Database (MongoDB & Postgres)
+### Run services with docker-compose.yml
+```
+docker compose up --build
+```
+To remove services:
+```
+docker compose down
+```
+
+## Week 3: Added nginx.conf for reversing the proxy
+Reference/ tutorial : https://www.bogotobogo.com/DevOps/Docker/Docker-Compose-Nginx-Reverse-Proxy-Multiple-Containers.php
