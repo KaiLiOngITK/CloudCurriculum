@@ -113,7 +113,7 @@ volumes:
   mongodb-data:
   order-services-database-postgres:
   # rabbitmq:
-  nginx:
+  # nginx.conf:
 
 networks:
   rabbitmq_cloudcurriculum:

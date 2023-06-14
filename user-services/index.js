@@ -66,15 +66,13 @@ app.get('/users/:id', function (req, res) {
             res.status(500).json({ error: "Internal server error" });
         } else {
             const users = result.rows;
-            res.status(200).json(users);
+            if (users.length == 0) {
+                res.status(404).json({ 'Message': 'User not found' });
+            } else {
+                res.status(200).json(users);
+            }
         }
     });
-    // if (user) {
-    //     res.json(user);
-    // } else {
-    //     // Sending 404 when user not found
-    //     res.status(404).json({ error: 'User not found' });
-    // }
 });
 
 app.delete('/users/:id', function (req, res) {
@@ -87,18 +85,13 @@ app.delete('/users/:id', function (req, res) {
             res.status(500).json({ error: "Internal server error" });
         } else {
             const users = result.rows;
-            res.status(200).json(users);
+            if (users.length == 0) {
+                res.status(404).json({ 'Message': 'User not found' });
+            } else {
+                res.status(200).json(users);
+            }
         }
     });
-    // // Remove item from the users array
-    // users = users.filter(i => {
-    //     if (i.id !== id) {
-    //         return true;
-    //     }
-    //     return false;
-    // });
-
-    // res.status(200).json(users);
 });
 
 app.put('/users/:id', function (req, res, next) {
@@ -113,17 +106,13 @@ app.put('/users/:id', function (req, res, next) {
             res.status(500).json({ error: "Internal server error" });
         } else {
             const users = result.rows;
-            res.status(200).json(users);
+            if (users.length == 0) {
+                res.status(404).json({ 'Message': 'User not found' });
+            } else {
+                res.status(200).json(users);
+            }
         }
     });
-    // if (item) {
-    //     item.id = user.id;
-    //     item.name = user.name;
-    //     item.email = user.email;
-    // }
-    // res.json(users);
-    // res.status(200).send('User is edited. \n');
-
 });
 
 var server = app.listen(port, function () {

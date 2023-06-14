@@ -54,7 +54,7 @@ app.post('/products', async function (req, res) {
 // GET /products/:id - Retrieve product by ID
 app.get('/products/:id', async function (req, res) {
   try {
-    const id = new ObjectId(+req.params.id);
+    const id = new ObjectId(req.params.id);
     const client = new MongoClient(uri);
     await client.connect();
     const collection = client.db(dbName).collection(collectionName);
@@ -111,7 +111,7 @@ app.delete('/products/:id', async function (req, res) {
 
 app.put('/products/:id', async function (req, res, next) {
   try {
-    const id = new ObjectId(+req.params.id);
+    const id = new ObjectId(req.params.id);
     const updatedProduct = req.body;
     const client = new MongoClient(uri);
     await client.connect();
