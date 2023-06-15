@@ -22,8 +22,7 @@ app.use(express.json());
 
 // GET /users - Retrieve all products
 app.get('/users', function (req, res) {
-    // const users = pool.query("SELECT * FROM users")
-    // res.send(users.rows);
+
     pool.query("SELECT * FROM users ORDER BY id ASC", (error, result) => {
         if (error) {
             console.error("Error executing query", error);
@@ -33,7 +32,6 @@ app.get('/users', function (req, res) {
             res.status(200).json(users);
         }
     });
-    // res.json(users);
 });
 
 // POST /users - Create a new user
