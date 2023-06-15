@@ -1,16 +1,14 @@
 var express = require('express');
 const pool = require('./db');
-const amqplib = require('amqplib');
-const amqpUrl = process.env.AMQP_URL || 'amqp://guest:guest@rabbitmq:5673/';
+// const amqplib = require('amqplib');
+// const pub = require('./pub');
+
 
 var app = express();
 var http = require('http');
-var channel, connection;
+// var channel;
 
-const port = process.env.PORT || 8082;
-
-// Where we will keep the orders data
-// const orders = [];
+const port = 8082;
 
 app.use(express.json());
 
@@ -19,33 +17,43 @@ pool.query("CREATE TABLE IF NOT EXISTS orders (id SERIAL, userId VARCHAR(50), pr
 const exchange_name = 'order-shipment';
 const exchange_type = 'fanout';
 
-// connectQueue(); // call connectQueue function
+// var amqp = require('amqplib/callback_api');
+const amqplib = require('amqplib');
+const amqpUrl = 'amqp://guest:guest@rabbitmq:5672';
 
-async function connectQueue() {
-    connection = await amqplib.connect(amqpUrl);
-    channel = await connection.createChannel();
+const sendMessage = async () => {
+
     try {
-        console.log('Publishing');
-        //     // https://amqp-node.github.io/amqplib/channel_api.html#channel_assertExchange
-        //     await channel.assertExchange(exchange_name, exchange_type, {
-        //         durable: false
-        //     });
+        console.log('===================================> Connecting to RabbitMQ....');
 
-    } catch (error) {
-        console.log(error);
-    }
-}
+        const connection = await amqplib.connect(amqpUrl);
+        console.log('===================================> Connected');
 
-// const sendMessageToQueue = async (message) => {
-//     const queue_name = '';
-//     await channel.publish(
-//         exchange_name,
-//         queue_name,
-//         Buffer.from(message)
-//     );
-// };
 
-app.get('/orders', function (req, res) {
+        const channel = await connection.createChannel();
+
+        const queue = "my-queue";
+        const message = "hello, RabbitMQ!";
+
+        await channel.assertQueue(queue, { durable: false });
+        channel.sendToQueue(queue, Buffer.from(message));
+
+        console.log(`Sent message: ${message}`);
+
+        setTimeout(() => {
+            connection.close();
+            process.exit(0);
+        }, 500);
+
+        // await channel.publish(exchange, routingKey, Buffer.from(JSON.stringify("Testing ............................msg")));
+    } catch (e) {
+        console.error('Error in publishing message', e);
+        console.log("Retrying in 5 seconds...");
+        setTimeout(sendMessage, 5000);
+    } 
+};
+
+app.get('/orders', async function (req, res) {
 
     pool.query("SELECT * FROM orders", (error, result) => {
         if (error) {
@@ -62,13 +70,13 @@ app.post('/orders', function (req, res) {
     const { id, userId, productIds } = req.body;
     const order = req.body;
 
-    const productExists = checkProductExist (productIds, res);
+    const productExists = checkProductExist(productIds, res);
     // console.log(productExists);
 
-    const userExists = checkUserExist (userId, res);
+    const userExists = checkUserExist(userId, res);
     // console.log(userExists);
 
-    const orderExists = checkOrderExist (id, res);
+    const orderExists = checkOrderExist(id, res);
     // console.log(orderExists);
 
     pool.query("INSERT INTO orders (id, userId, productIds) VALUES ($1, $2, $3) RETURNING *", [id, userId, productIds], (error, result) => {
@@ -80,6 +88,8 @@ app.post('/orders', function (req, res) {
             res.status(200).json(createdOrder);
         }
     })
+
+    sendMessage();
 });
 
 app.get('/orders/:id', function (req, res) {
@@ -113,7 +123,7 @@ app.put('/orders/:id', function (req, res, next) {
             const orders = result.rows;
             res.status(200).json(orders);
         }
-    }); 
+    });
 });
 
 function checkProductExist(productIds, response) {
@@ -121,10 +131,10 @@ function checkProductExist(productIds, response) {
     productURL = `http://${process.env.PRODUCT_SERVICE_HOST}:${process.env.PRODUCT_SERVICE_PORT}/products/${productIds}`;
     console.log(productURL);
 
-    var req = http.get(productURL, function (res){
+    var req = http.get(productURL, function (res) {
         console.log('STATUS: ' + res.statusCode);
-        if(res.statusCode != 200){
-            return response.status(res.statusCode).json({'message': 'Invalid productId'});
+        if (res.statusCode != 200) {
+            return response.status(res.statusCode).json({ 'message': 'Invalid productId' });
         }
     });
 };
@@ -134,10 +144,10 @@ function checkUserExist(userId, response) {
     userURL = `http://${process.env.USER_SERVICE_HOST}:${process.env.USER_SERVICE_PORT}/users/${userId}`;
     console.log(userURL);
 
-    var req = http.get(userURL, function (res){
+    var req = http.get(userURL, function (res) {
         console.log('STATUS: ' + res.statusCode);
-        if(res.statusCode != 200){
-            return response.status(res.statusCode).json({'message': 'Invalid userId'});
+        if (res.statusCode != 200) {
+            return response.status(res.statusCode).json({ 'message': 'Invalid userId' });
         }
     });
 };

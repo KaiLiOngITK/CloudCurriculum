@@ -9,6 +9,11 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./user-services-database-postgres:/var/lib/postgresql/data
 
@@ -27,8 +32,12 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      # POSTGRES_DB: cloudcurriculum
       PGPORT: 5433
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./order-services-database-postgres:/var/lib/postgresql/data
 
@@ -71,6 +80,7 @@ services:
     restart: always
     depends_on:
       - order-services-database-postgres
+      - rabbitmq
 
   # shipping-services:
   #   build: 
@@ -82,18 +92,16 @@ services:
   #   depends_on:
   #     - rabbitmq
 
-  # rabbitmq:
-  #   image: rabbitmq:3.8-management-alpine
-  #   ports:
-  #     - 5673:5672
-  #     - 15673:15672
-  #   environment:
-  #     - AMQP_URL='amqp://guest:guest@rabbitmq:5673/'
-  #   volumes:
-  #     - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-  #     - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
-  #   networks:
-  #     - rabbitmq_cloudcurriculum
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://rabbitmq:5672"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
   
   nginx:
     image: nginx:alpine
@@ -112,9 +120,9 @@ volumes:
   user-services-database-postgres:
   mongodb-data:
   order-services-database-postgres:
-  # rabbitmq:
+  rabbitmq:
   # nginx.conf:
 
-networks:
-  rabbitmq_cloudcurriculum:
-    driver: bridge
+# networks:
+#   rabbitmq_cloudcurriculum:
+#     driver: bridge
