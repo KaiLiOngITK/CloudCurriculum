@@ -68,10 +68,7 @@ app.post('/orders', function (req, res) {
     const { id, userId, productIds } = req.body;
     const order = req.body;
 
-    checkProductExist(productIds, res);
-    checkUserExist(userId, res);
-    checkOrderExist(id, userId, productIds, res, req);
-    // postToDatabase(id, userId, productIds, res, req);
+    checkValidity(id, userId, productIds, res, req);
 });
 
 app.get('/orders/:id', function (req, res) {
@@ -123,7 +120,7 @@ app.delete('/orders', function (req, res) {
     pool.query("CREATE TABLE IF NOT EXISTS orders (id SERIAL, userId VARCHAR(50), productIds VARCHAR(50))");
 });
 
-function checkProductExist(productIds, response) {
+function checkValidity(id, userId, productIds, response, request) {
 
     productURL = `http://${process.env.PRODUCT_SERVICE_HOST}:${process.env.PRODUCT_SERVICE_PORT}/products/${productIds}`;
     console.log(productURL);
@@ -131,45 +128,39 @@ function checkProductExist(productIds, response) {
     var req = http.get(productURL, function (res) {
         console.log('STATUS: ' + res.statusCode);
         if (res.statusCode != 200) {
-            valid[1] = "false";
+            valid[0] = "false";
             return response.status(res.statusCode).json({ 'message': 'Invalid productId' });
-        }
-    });
-};
-
-function checkUserExist(userId, response) {
-
-    userURL = `http://${process.env.USER_SERVICE_HOST}:${process.env.USER_SERVICE_PORT}/users/${userId}`;
-    console.log(userURL);
-
-    var req = http.get(userURL, function (res) {
-        console.log('STATUS: ' + res.statusCode);
-
-        if (res.statusCode != 200) {
-            valid[1] = "false";
-            return response.status(res.statusCode).json({ 'message': 'Invalid userId' });
-        }
-    });
-};
-
-function checkOrderExist(id, userId, productIds, response, request) {
-
-    pool.query("SELECT * FROM orders where id = $1", [id], (error, result) => {
-        if (error) {
-            valid[2] = "false";
-            console.error("Error executing query", error);
-            return response.status(500).json({ error: "Internal server error" }), valid;
         } else {
-            const orders = result.rows;
-            if (orders.length != 0) {
-                valid[2] = "false";
-                return response.status(404).json({ 'Message': 'Existing order found' });
-            }else {
-                postToDatabase(id, userId, productIds, response, request);
-            }
+            userURL = `http://${process.env.USER_SERVICE_HOST}:${process.env.USER_SERVICE_PORT}/users/${userId}`;
+            console.log(userURL);
+
+            var req = http.get(userURL, function (res) {
+                console.log('STATUS: ' + res.statusCode);
+
+                if (res.statusCode != 200) {
+                    valid[1] = "false";
+                    return response.status(res.statusCode).json({ 'message': 'Invalid userId' });
+                } else {
+                    pool.query("SELECT * FROM orders where id = $1", [id], (error, result) => {
+                        if (error) {
+                            valid[2] = "false";
+                            console.error("Error executing query", error);
+                            return response.status(500).json({ error: "Internal server error" }), valid;
+                        } else {
+                            const orders = result.rows;
+                            if (orders.length != 0) {
+                                valid[2] = "false";
+                                return response.status(404).json({ 'Message': 'Existing order found' });
+                            } else {
+                                postToDatabase(id, userId, productIds, response, request);
+                            }
+                        }
+                    });
+                }
+            });
         }
     });
-};
+}
 
 function postToDatabase(id, userId, productIds, res, req) {
     if (valid[0] == "true" && valid[1] == "true" && valid[2] == "true") {
@@ -183,7 +174,7 @@ function postToDatabase(id, userId, productIds, res, req) {
             }
         });
         sendMessage(req.body);
-    }        
+    }
 };
 
 var server = app.listen(port, function () {
