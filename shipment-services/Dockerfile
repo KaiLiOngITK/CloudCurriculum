@@ -1,6 +1,6 @@
-FROM python:3.10-slim-buster
+FROM python:latest
 
-WORKDIR /order
+WORKDIR /shipment-services
 
 COPY requirements.txt requirements.txt
 
