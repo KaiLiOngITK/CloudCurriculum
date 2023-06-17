@@ -92,16 +92,29 @@ services:
   #   depends_on:
   #     - rabbitmq
 
+  shipment-services:
+    build: 
+      context: ./shipment-services
+      dockerfile: Dockerfile
+    ports:
+      - 8083:8083
+    restart: always
+    depends_on:
+      - rabbitmq
+
   rabbitmq:
     image: rabbitmq:3.8-management-alpine
     ports:
       - 5672:5672
       - 15672:15672
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://rabbitmq:5672"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    # restart: always
+    # networks:
+    #   - rabbitmq_cloudcurriculum
+    # healthcheck:
+    #   test: ["CMD", "curl", "-u", "guest:guest", "rabbitmq:15672/api/overview"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
   
   nginx:
     image: nginx:alpine

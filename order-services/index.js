@@ -16,20 +16,18 @@ let valid = []; // validProduct, validUser, validOrder
 const sendMessage = async (message) => {
 
     try {
-        console.log('===================================> Connecting to RabbitMQ....');
-
         const connection = await amqplib.connect(amqpUrl);
         console.log('===================================> Connected');
-
-
         const channel = await connection.createChannel();
 
         const queue = "order-shipment";
+        const routingKey = "order-shipment";
 
         await channel.assertQueue(queue, { durable: false });
         channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+        // channel.publish(queue, routingKey, Buffer.from(JSON.stringify(message)));
 
-        console.log(`===================================> Sent message: ${JSON.stringify(message)}`);
+        console.log(` [x] Sent message: ${JSON.stringify(message)}`);
 
         setTimeout(() => {
             connection.close();
