@@ -21,7 +21,7 @@ const sendMessage = async (message) => {
         const channel = await connection.createChannel();
 
         const queue = "order-shipment";
-        const routingKey = "order-shipment";
+        // const routingKey = "order-shipment";
 
         await channel.assertQueue(queue, { durable: false });
         channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));

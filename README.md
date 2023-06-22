@@ -36,3 +36,19 @@ docker compose down
 
 ## Week 3: Added nginx.conf for reversing the proxy
 Reference/ tutorial : https://www.bogotobogo.com/DevOps/Docker/Docker-Compose-Nginx-Reverse-Proxy-Multiple-Containers.php
+
+## Week 4: Added rabbitmq for publish and subscribe
+```
+rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+```
+## Week 5: Added to Azure
+The service created in azure : onk1frcloudcurriculum
+```
+docker login onk1frcloudcurriculum.azurecr.io
+docker tag cloudcurriculum-order-services onk1frcloudcurriculum.azurecr.io/cloudcurriculum-order-services
+docker push onk1frcloudcurriculum.azurecr.io/cloudcurriculum-order-services
+```

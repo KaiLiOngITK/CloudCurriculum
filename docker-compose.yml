@@ -133,7 +133,7 @@ volumes:
   user-services-database-postgres:
   mongodb-data:
   order-services-database-postgres:
-  rabbitmq:
+  # rabbitmq:
   # nginx.conf:
 
 # networks:
