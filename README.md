@@ -45,7 +45,7 @@ rabbitmq:
       - 5672:5672
       - 15672:15672
 ```
-## Week 5: Added to Azure
+## Week 5: Added to Azure (deleted on azure -- scared it cost money to ITK)
 The service created in azure : onk1frcloudcurriculum
 ```
 docker login onk1frcloudcurriculum.azurecr.io
